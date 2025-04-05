@@ -51,7 +51,7 @@ engie-grafico-case/
 
 1. Clone o repositório:
 ```
-git clone https://github.com/seu-usuario/engie-grafico-case.git
+git clone https://github.com/GilbertoPaiva/c2p
 ```
 
 2. Navegue até a pasta do projeto:
