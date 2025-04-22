@@ -6,14 +6,11 @@ const GraficoCombinado = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Função para processar dados manualmente (se não tiver arquivo Excel)
   const processarDadosManualmente = () => {
-    // Dados corretos conforme fornecido
     const duracaoAnos = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const corporateDI = [1, 2.4, 3, 7, 5, 8, 9, 9, 9, 9, 9];
     const engieBrasil = [1, 2, 4, 6, 8, 8, 8, 8, 8, 8, 8];
     
-    // Scatter Points
     const scatterPoints = [
       { x: [1.3], y: [3], name: 'ENGIA0' },
       { x: [2.6], y: [4], name: 'ENGIA1' },
@@ -22,7 +19,6 @@ const GraficoCombinado = () => {
       { x: [7.9], y: [7], name: 'ENGIC3' }
     ];
     
-    // Box Plots
     const boxPlots = [
       { x: 1.5, y: [1.5, 2.1, 2.4, 2.2, 1.9], name: 'ENGIA0' },
       { x: 2.7, y: [2.5, 2.8, 3.0, 2.7, 2.9], name: 'ENGIA1' },
@@ -34,7 +30,6 @@ const GraficoCombinado = () => {
     prepararDadosGrafico(duracaoAnos, corporateDI, engieBrasil, scatterPoints, boxPlots);
   };
   
-  // Função para ler arquivo Excel
   const processarArquivoExcel = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -46,16 +41,11 @@ const GraficoCombinado = () => {
       const bstr = evt.target.result;
       const wb = XLSX.read(bstr, { type: 'binary' });
       
-      // Obtendo a primeira planilha
       const wsName = wb.SheetNames[0];
       const ws = wb.Sheets[wsName];
       
-      // Convertendo para JSON
       const dados = XLSX.utils.sheet_to_json(ws, { header: 1 });
       
-      // Extraindo os dados específicos das colunas
-      // Assumindo uma estrutura como: 
-      // [["Duration Anos", 0, 1, 2, ...], ["Corporate DI", 1, 2.4, 3, ...], ...]
       let duracaoAnos = [];
       let corporateDI = [];
       let engieBrasil = [];
@@ -70,8 +60,7 @@ const GraficoCombinado = () => {
           engieBrasil = row.slice(1);
         }
       }
-      
-      // Processando os scatter points
+    
       const scatterPointsRows = [];
       const boxPlotsRows = [];
       
@@ -95,14 +84,12 @@ const GraficoCombinado = () => {
         }
       }
       
-      // Processando scatter points do Excel
       const scatterPoints = scatterPointsRows.map(row => ({
         x: [parseFloat(row[1])],
         y: [parseFloat(row[2])],
         name: row[0]
       }));
       
-      // Processando box plots do Excel
       const boxPlotsByName = {};
       boxPlotsRows.forEach(row => {
         const name = row[0];
@@ -128,11 +115,9 @@ const GraficoCombinado = () => {
     reader.readAsBinaryString(file);
   };
   
-  // Função para baixar o modelo de Excel
   const downloadModeloExcel = () => {
     const wb = XLSX.utils.book_new();
     
-    // Dados para a planilha principal
     const dados = [
       ["Duration Anos", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       ["Corporate DI", 1, 2.4, 3, 7, 5, 8, 9, 9, 9, 9, 9],
@@ -178,13 +163,10 @@ const GraficoCombinado = () => {
     const ws = XLSX.utils.aoa_to_sheet(dados);
     XLSX.utils.book_append_sheet(wb, ws, "Dados");
     
-    // Gerar o arquivo e iniciar download
     XLSX.writeFile(wb, "modelo_dados_grafico.xlsx");
   };
   
-  // Função para preparar os dados para o Plotly
   const prepararDadosGrafico = (duracaoAnos, corporateDI, engieBrasil, scatterPoints, boxPlots) => {
-    // Definindo cores para cada série
     const colors = {
       'ENGIA0': '#3366cc',
       'ENGIA1': '#9900cc',
@@ -193,9 +175,7 @@ const GraficoCombinado = () => {
       'ENGIC3': '#000000'
     };
     
-    // Preparando dados para Plotly
     const plotlyData = [
-      // Linha Corporate DI
       {
         x: duracaoAnos,
         y: corporateDI,
@@ -207,7 +187,6 @@ const GraficoCombinado = () => {
           width: 2
         }
       },
-      // Linha Engie Brasil
       {
         x: duracaoAnos,
         y: engieBrasil,
@@ -221,7 +200,6 @@ const GraficoCombinado = () => {
       }
     ];
     
-    // Adicionar scatter points
     scatterPoints.forEach(point => {
       plotlyData.push({
         x: point.x,
@@ -236,7 +214,6 @@ const GraficoCombinado = () => {
       });
     });
     
-    // Adicionar box plots
     boxPlots.forEach(box => {
       plotlyData.push({
         x: Array(box.y.length).fill(box.x),
@@ -257,12 +234,10 @@ const GraficoCombinado = () => {
     setData(plotlyData);
   };
   
-  // Inicializar com dados padrão se não houver arquivo
   useEffect(() => {
     processarDadosManualmente();
   }, []);
   
-  // Layout do gráfico
   const layout = {
     title: '',
     xaxis: {
